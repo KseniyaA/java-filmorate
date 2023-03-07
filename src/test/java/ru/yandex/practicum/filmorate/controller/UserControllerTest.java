@@ -209,7 +209,7 @@ class UserControllerTest {
         User createdUser1 = userController.create(user1);
 
         User user2 = User.builder()
-                .email("email@ya.ru2")
+                .email("email1@ya.ru")
                 .login("userLogin2")
                 .birthday(LocalDate.of(2000, 01, 01))
                 .name("userName2")
