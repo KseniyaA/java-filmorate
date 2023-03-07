@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -48,7 +49,7 @@ public class FilmController {
     }
 
     private void check(Film film) {
-        if (film.getName().isBlank()) {
+        if (!StringUtils.hasLength(film.getName())) {
             log.warn("Название не может быть пустым");
             throw new ValidationException("Название не может быть пустым");
         }

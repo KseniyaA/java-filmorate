@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -23,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public User create(/*@Valid*/ @RequestBody User user) {
+    public User create(@RequestBody User user) {
         log.info("Получен запрос POST /users с параметрами {}", user);
         check(user);
         user.setId(++idSequence);
@@ -54,15 +56,16 @@ public class UserController {
     }
 
     private void check(User user) {
-        if (user.getEmail().isBlank()) {
+        if (!StringUtils.hasLength(user.getEmail())) {
             log.warn("Электронная почта не может быть пустой");
             throw new ValidationException("Электронная почта не может быть пустой");
         }
-        if (!user.getEmail().contains("@")) {
+        EmailValidator validator = EmailValidator.getInstance();
+        if (!validator.isValid(user.getEmail())) {
             log.warn("Электронная почта должна содержать символ @");
             throw new ValidationException("Электронная почта должна содержать символ @");
         }
-        if (user.getLogin().isBlank() || user.getLogin().contains(" ")) {
+        if (!StringUtils.hasLength(user.getLogin()) || user.getLogin().contains(" ")) {
             log.warn("Логин не может быть пустым и содержать пробелы");
             throw new ValidationException("Логин не может быть пустым и содержать пробелы");
         }

@@ -33,6 +33,13 @@
 			<version>RELEASE</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.7</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
