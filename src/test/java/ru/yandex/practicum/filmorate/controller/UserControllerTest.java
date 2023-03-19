@@ -2,15 +2,18 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserControllerTest {
-    private final UserController userController = new UserController();
+    private final UserController userController = new UserController(new UserService(new InMemoryUserStorage()));
 
     @Test
     void create() {
@@ -165,7 +168,7 @@ class UserControllerTest {
                 .build();
         User updatedUser = userController.update(updateUser);
 
-        assertEquals(1, userController.getUsers().size());
+        assertEquals(1, userController.findAll().size());
         assertEquals("email@ya.ru", updatedUser.getEmail());
         assertEquals("userLogin1", updatedUser.getLogin());
         assertEquals(LocalDate.of(2000, 01, 01), updatedUser.getBirthday());
@@ -190,12 +193,12 @@ class UserControllerTest {
                 .name("userName1")
                 .build();
 
-        final ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        final UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
                 () -> {
                     userController.update(updateUser);
                 });
-        assertEquals("404 NOT_FOUND \"Пользователь с id = 999 не найден\"", exception.getMessage());
+        assertEquals("Пользователь с id = 999 не найден", exception.getMessage());
     }
 
     @Test
@@ -216,6 +219,6 @@ class UserControllerTest {
                 .build();
         User createdUser2 = userController.create(user2);
 
-        assertEquals(2, userController.getUsers().size());
+        assertEquals(2, userController.findAll().size());
     }
 }

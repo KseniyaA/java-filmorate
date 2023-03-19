@@ -2,16 +2,21 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-    private final FilmController filmController= new FilmController();
+    private final FilmController filmController= new FilmController(new FilmService(new InMemoryFilmStorage())
+        , new UserService(new InMemoryUserStorage()));
 
     @Test
     void findAll() {
@@ -177,7 +182,7 @@ class FilmControllerTest {
                 .build();
         Film updatedFilm = filmController.update(updateFilm);
 
-        assertEquals(1, filmController.getFilms().size());
+        assertEquals(1, filmController.findAll().size());
         assertEquals("name1", updatedFilm.getName());
         assertEquals(2, updatedFilm.getRate());
         assertEquals("description1", updatedFilm.getDescription());
@@ -205,12 +210,12 @@ class FilmControllerTest {
                 .releaseDate(LocalDate.of(2000, 12, 28))
                 .build();
 
-        final ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        final FilmNotFoundException exception = assertThrows(
+                FilmNotFoundException.class,
                 () -> {
                     filmController.update(updateFilm);
                 });
-        assertEquals("404 NOT_FOUND \"Фильм с id = 999 не найден\"", exception.getMessage());
+        assertEquals("Фильм с id = 999 не найден", exception.getMessage());
     }
 
     @Test
@@ -232,7 +237,7 @@ class FilmControllerTest {
                 .build();
         filmController.create(film2);
 
-        assertEquals(2, filmController.getFilms().size());
+        assertEquals(2, filmController.findAll().size());
     }
 
     @Test
