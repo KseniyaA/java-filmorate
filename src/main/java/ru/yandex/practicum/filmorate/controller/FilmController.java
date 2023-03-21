@@ -14,12 +14,10 @@ import java.util.*;
 @Slf4j
 public class FilmController {
     private final FilmService filmService;
-    private final UserService userService;
 
     @Autowired
-    public FilmController(FilmService filmService, UserService userService) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
-        this.userService = userService;
     }
 
     @PostMapping("/films")
@@ -52,28 +50,21 @@ public class FilmController {
         return filmService.findAll();
     }
 
-    // PUT /films/{id}/like/{userId} — пользователь ставит лайк фильму
     @PutMapping("/films/{id}/like/{userId}")
     public void likeFilm(@PathVariable("id") int filmId, @PathVariable int userId) {
         log.info("Получен запрос PUT /films/{id}/like/{userId} с параметрами filmId = {}, userId = {}", filmId, userId);
-        Film film = filmService.get(filmId);
-        User user = userService.get(userId);
-        filmService.addLike(film, user);
+        filmService.likeFilm(filmId, userId);
     }
 
-    // DELETE /films/{id}/like/{userId} — пользователь удаляет лайк
     @DeleteMapping("/films/{id}/like/{userId}")
     public void dislikeFilm(@PathVariable("id") int filmId, @PathVariable int userId) {
         log.info("Получен запрос DELETE /films/{id}/like/{userId} с параметрами id = {}, userId = {}", filmId, userId);
-        Film film = filmService.get(filmId);
-        User user = userService.get(userId);
-        filmService.removeLike(film, user);
+        filmService.dislikeFilm(filmId, userId);
     }
 
-    // GET /films/popular?count={count}
     @GetMapping("/films/popular")
-    public List<Film> getPopularFilms(@RequestParam(required = false) Integer count) {
+    public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") int count) {
         log.info("Получен запрос GET /films/popular?count={count} с параметрами count = {}", count);
-        return filmService.getPopularFilms(Optional.ofNullable(count));
+        return filmService.getPopularFilms(count);
     }
 }

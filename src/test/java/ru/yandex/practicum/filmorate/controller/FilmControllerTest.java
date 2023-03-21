@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
@@ -15,13 +13,8 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-    private final FilmController filmController= new FilmController(new FilmService(new InMemoryFilmStorage())
-        , new UserService(new InMemoryUserStorage()));
-
-    @Test
-    void findAll() {
-
-    }
+    private final FilmService filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage());
+    private final FilmController filmController = new FilmController(filmService);
 
     @Test
     void create() {
@@ -30,14 +23,14 @@ class FilmControllerTest {
                 .rate(1)
                 .description("description")
                 .duration(100)
-                .releaseDate(LocalDate.of(2020, 01, 01))
+                .releaseDate(LocalDate.of(2020, 1, 1))
                 .build();
         Film createdFilm = filmController.create(film);
         assertTrue(createdFilm.getId() > 0);
         assertEquals("name", createdFilm.getName());
         assertEquals("description", createdFilm.getDescription());
         assertEquals(100, createdFilm.getDuration());
-        assertEquals(LocalDate.of(2020, 01, 01), createdFilm.getReleaseDate());
+        assertEquals(LocalDate.of(2020, 1, 1), createdFilm.getReleaseDate());
     }
 
     @Test
@@ -49,7 +42,7 @@ class FilmControllerTest {
                             .rate(1)
                             .description("description")
                             .duration(100)
-                            .releaseDate(LocalDate.of(2020, 01, 01))
+                            .releaseDate(LocalDate.of(2020, 1, 1))
                             .build();
                 });
     }
@@ -61,7 +54,7 @@ class FilmControllerTest {
                 .rate(1)
                 .description("description")
                 .duration(100)
-                .releaseDate(LocalDate.of(2020, 01, 01))
+                .releaseDate(LocalDate.of(2020, 1, 1))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
@@ -77,7 +70,7 @@ class FilmControllerTest {
                 .rate(1)
                 .description("*".repeat(200))
                 .duration(100)
-                .releaseDate(LocalDate.of(2020, 01, 01))
+                .releaseDate(LocalDate.of(2020, 1, 1))
                 .build();
 
         Film createdFilm = filmController.create(film);
@@ -92,7 +85,7 @@ class FilmControllerTest {
                 .rate(1)
                 .description("*".repeat(201))
                 .duration(100)
-                .releaseDate(LocalDate.of(2020, 01, 01))
+                .releaseDate(LocalDate.of(2020, 1, 1))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,

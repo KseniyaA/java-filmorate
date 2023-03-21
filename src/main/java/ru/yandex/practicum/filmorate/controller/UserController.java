@@ -54,31 +54,24 @@ public class UserController {
     @PutMapping("/users/{id}/friends/{friendId}")
     public void addFriend(@PathVariable("id") int userId, @PathVariable int friendId) {
         log.info("Получен запрос PUT /users/{id}/friends/{friendId} с параметрами id = {}, friendId = {}", userId, friendId);
-        User user = userService.get(userId);
-        User friend = userService.get(friendId);
-        userService.addFriend(user, friend);
+        userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/users/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable("id") int userId, @PathVariable int friendId) {
         log.info("Получен запрос DELETE /users/{id}/friends/{friendId} с параметрами id = {}, friendId = {}", userId, friendId);
-        User user = userService.get(userId);
-        User friend = userService.get(friendId);
-        userService.removeFriend(user, friend);
+        userService.removeFriend(userId, friendId);
     }
 
     @GetMapping("/users/{id}/friends")
     public List<User> getFriends(@PathVariable("id") int userId) {
         log.info("Получен запрос GET /users/{id}/friends с параметрами id = {}", userId);
-        User user = userService.get(userId);
-        return userService.getUserFriends(user);
+        return userService.getUserFriends(userId);
     }
 
     @GetMapping("/users/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable("id") int userId, @PathVariable int otherId) {
         log.info("Получен запрос GET /users/{id}/friends/common/{otherId} с параметрами id = {}, otherId = {}", userId, otherId);
-        User user = userService.get(userId);
-        User other = userService.get(otherId);
-        return userService.getCommonFriends(user, other).stream().map(userService::get).collect(Collectors.toList());
+        return userService.getCommonFriends(userId, otherId);
     }
 }

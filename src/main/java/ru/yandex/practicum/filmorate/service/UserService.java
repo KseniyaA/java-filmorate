@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,25 +41,33 @@ public class UserService {
     }
 
     // добавление в друзья
-    public void addFriend(User user, User friend) {
+    public void addFriend(int userId, int friendId) {
+        User user = get(userId);
+        User friend = get(friendId);
+
         user.getFriends().add(friend.getId());
         friend.getFriends().add(user.getId());
     }
 
     // удаление из друзей
-    public void removeFriend(User user, User friend) {
+    public void removeFriend(int userId, int friendId) {
+        User user = get(userId);
+        User friend = get(friendId);
+
         user.getFriends().remove(friend.getId());
         friend.getFriends().remove(user.getId());
     }
 
-    // вывод списка общих друзей
-    public Set<Integer> getCommonFriends(User user1, User user2) {
-        Set<Integer> commonFriends = new HashSet<>(user1.getFriends());
-        commonFriends.retainAll(user2.getFriends());
-        return commonFriends;
+    public List<User> getCommonFriends(int userId, int otherId) {
+        User user = get(userId);
+        User other = get(otherId);
+        Set<Integer> commonFriends = new HashSet<>(user.getFriends());
+        commonFriends.retainAll(other.getFriends());
+        return commonFriends.stream().map(this::get).collect(Collectors.toList());
     }
 
-    public List<User> getUserFriends(User user) {
+    public List<User> getUserFriends(int userId) {
+        User user = get(userId);
         return user.getFriends().stream().map(this::get).collect(Collectors.toList());
     }
 }
