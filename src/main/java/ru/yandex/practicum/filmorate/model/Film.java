@@ -7,23 +7,25 @@ import lombok.Data;
 import lombok.NonNull;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
 public class Film {
-
     private int id;
-
     @NonNull
     private String name;
-
     @JsonFormat(pattern="yyyy-MM-dd")
     private LocalDate releaseDate;
-
     private String description;
-
     private int duration;
-
     private int rate;
+    @Builder.Default
+    private Set<Integer> likes = new HashSet<>();
+
+    public Film() {
+        this.likes = new HashSet<>();
+    }
 }

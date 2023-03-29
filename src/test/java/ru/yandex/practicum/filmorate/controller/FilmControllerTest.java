@@ -1,22 +1,20 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class FilmControllerTest {
-    private final FilmController filmController= new FilmController();
-
-    @Test
-    void findAll() {
-
-    }
+    private final FilmService filmService = new FilmService(new InMemoryFilmStorage(), new InMemoryUserStorage());
+    private final FilmController filmController = new FilmController(filmService);
 
     @Test
     void create() {
@@ -25,14 +23,14 @@ class FilmControllerTest {
                 .rate(1)
                 .description("description")
                 .duration(100)
-                .releaseDate(LocalDate.of(2020, 01, 01))
+                .releaseDate(LocalDate.of(2020, 1, 1))
                 .build();
         Film createdFilm = filmController.create(film);
         assertTrue(createdFilm.getId() > 0);
         assertEquals("name", createdFilm.getName());
         assertEquals("description", createdFilm.getDescription());
         assertEquals(100, createdFilm.getDuration());
-        assertEquals(LocalDate.of(2020, 01, 01), createdFilm.getReleaseDate());
+        assertEquals(LocalDate.of(2020, 1, 1), createdFilm.getReleaseDate());
     }
 
     @Test
@@ -44,7 +42,7 @@ class FilmControllerTest {
                             .rate(1)
                             .description("description")
                             .duration(100)
-                            .releaseDate(LocalDate.of(2020, 01, 01))
+                            .releaseDate(LocalDate.of(2020, 1, 1))
                             .build();
                 });
     }
@@ -56,7 +54,7 @@ class FilmControllerTest {
                 .rate(1)
                 .description("description")
                 .duration(100)
-                .releaseDate(LocalDate.of(2020, 01, 01))
+                .releaseDate(LocalDate.of(2020, 1, 1))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
@@ -72,7 +70,7 @@ class FilmControllerTest {
                 .rate(1)
                 .description("*".repeat(200))
                 .duration(100)
-                .releaseDate(LocalDate.of(2020, 01, 01))
+                .releaseDate(LocalDate.of(2020, 1, 1))
                 .build();
 
         Film createdFilm = filmController.create(film);
@@ -87,7 +85,7 @@ class FilmControllerTest {
                 .rate(1)
                 .description("*".repeat(201))
                 .duration(100)
-                .releaseDate(LocalDate.of(2020, 01, 01))
+                .releaseDate(LocalDate.of(2020, 1, 1))
                 .build();
         final ValidationException exception = assertThrows(
                 ValidationException.class,
@@ -177,7 +175,7 @@ class FilmControllerTest {
                 .build();
         Film updatedFilm = filmController.update(updateFilm);
 
-        assertEquals(1, filmController.getFilms().size());
+        assertEquals(1, filmController.findAll().size());
         assertEquals("name1", updatedFilm.getName());
         assertEquals(2, updatedFilm.getRate());
         assertEquals("description1", updatedFilm.getDescription());
@@ -205,12 +203,12 @@ class FilmControllerTest {
                 .releaseDate(LocalDate.of(2000, 12, 28))
                 .build();
 
-        final ResponseStatusException exception = assertThrows(
-                ResponseStatusException.class,
+        final FilmNotFoundException exception = assertThrows(
+                FilmNotFoundException.class,
                 () -> {
                     filmController.update(updateFilm);
                 });
-        assertEquals("404 NOT_FOUND \"Фильм с id = 999 не найден\"", exception.getMessage());
+        assertEquals("Фильм с id = 999 не найден", exception.getMessage());
     }
 
     @Test
@@ -232,7 +230,7 @@ class FilmControllerTest {
                 .build();
         filmController.create(film2);
 
-        assertEquals(2, filmController.getFilms().size());
+        assertEquals(2, filmController.findAll().size());
     }
 
     @Test
