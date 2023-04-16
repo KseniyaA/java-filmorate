@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate=jdbcTemplate;
+    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -78,14 +78,14 @@ public class FilmDbStorage implements FilmStorage {
             throw new IllegalArgumentException("Переданный id рейтинг не существует");
         }
 
-        jdbcTemplate.update(sqlQuery
-                , film.getName()
-                , Date.valueOf(film.getReleaseDate())
-                , film.getDescription()
-                , film.getDuration()
-                , film.getMpa().getId()
-                , film.getRate()
-                , film.getId()
+        jdbcTemplate.update(sqlQuery,
+                film.getName(),
+                Date.valueOf(film.getReleaseDate()),
+                film.getDescription(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getRate(),
+                film.getId()
         );
 
         Set<Integer> genresIdsInDb = getAllGenresByFilmId(film.getId()).stream().map(Genre::getId).collect(Collectors.toSet());
@@ -122,7 +122,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findAll() {
-        String sql ="SELECT  id, name, release_date, description, duration, rate, rating_id FROM film ";
+        String sql = "SELECT  id, name, release_date, description, duration, rate, rating_id FROM film ";
         return jdbcTemplate.query(sql, this::mapRowToFilm);
     }
 

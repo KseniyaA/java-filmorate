@@ -25,7 +25,7 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public UserDbStorage(JdbcTemplate jdbcTemplate){
-        this.jdbcTemplate=jdbcTemplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -64,12 +64,12 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "update users set " +
                 "email = ?, login = ?, name = ? , birthday = ? " +
                 "where id = ?";
-        jdbcTemplate.update(sqlQuery
-                , user.getEmail()
-                , user.getLogin()
-                , user.getName()
-                , Date.valueOf(user.getBirthday())
-                , user.getId()
+        jdbcTemplate.update(sqlQuery,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                Date.valueOf(user.getBirthday()),
+                user.getId()
         );
         return get(user.getId());
     }
@@ -136,7 +136,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getUserFriends(int userId) {
-        String sql ="SELECT DISTINCT u.* " +
+        String sql = "SELECT DISTINCT u.* " +
                 "FROM FRIENDSHIP f " +
                 "INNER JOIN users u ON u.id = f.user_to " +
                 "WHERE f.user_from = ?";
