@@ -16,7 +16,7 @@ public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(@Qualifier("InMemoryUserStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -40,34 +40,20 @@ public class UserService {
         return userStorage.findAll();
     }
 
-    // добавление в друзья
     public void addFriend(int userId, int friendId) {
-        User user = get(userId);
-        User friend = get(friendId);
-
-        user.getFriends().add(friend.getId());
-        friend.getFriends().add(user.getId());
+        userStorage.addFriend(userId, friendId);
     }
 
     // удаление из друзей
     public void removeFriend(int userId, int friendId) {
-        User user = get(userId);
-        User friend = get(friendId);
-
-        user.getFriends().remove(friend.getId());
-        friend.getFriends().remove(user.getId());
+        userStorage.removeFriend(userId, friendId);
     }
 
     public List<User> getCommonFriends(int userId, int otherId) {
-        User user = get(userId);
-        User other = get(otherId);
-        Set<Integer> commonFriends = new HashSet<>(user.getFriends());
-        commonFriends.retainAll(other.getFriends());
-        return commonFriends.stream().map(this::get).collect(Collectors.toList());
+        return userStorage.getCommonFriends(userId, otherId);
     }
 
     public List<User> getUserFriends(int userId) {
-        User user = get(userId);
-        return user.getFriends().stream().map(this::get).collect(Collectors.toList());
+        return userStorage.getUserFriends(userId);
     }
 }

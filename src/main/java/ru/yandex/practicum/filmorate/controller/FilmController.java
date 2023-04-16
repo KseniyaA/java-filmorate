@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.*;
 
@@ -66,5 +66,29 @@ public class FilmController {
     public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") int count) {
         log.info("Получен запрос GET /films/popular?count={count} с параметрами count = {}", count);
         return filmService.getPopularFilms(count);
+    }
+
+    @GetMapping("/genres/{id}")
+    public Genre getGenre(@PathVariable int id) {
+        log.info("Получен запрос GET /genres/{id} с параметрами id = {}", id);
+        return filmService.getGenre(id);
+    }
+
+    @GetMapping("/genres")
+    public List<Genre> findAllGenres() {
+        log.info("Получен запрос GET /genres.");
+        return filmService.findAllGenres();
+    }
+
+    @GetMapping("/mpa/{id}")
+    public Mpa getRating(@PathVariable int id) {
+        log.info("Получен запрос GET /mpa/{id} с параметрами id = {}", id);
+        return filmService.getMpa(id);
+    }
+
+    @GetMapping("/mpa")
+    public List<Mpa> findAllGRatings() {
+        log.info("Получен запрос GET /mpa.");
+        return filmService.findAllMpa();
     }
 }

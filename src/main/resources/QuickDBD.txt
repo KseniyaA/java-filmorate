@@ -2,43 +2,42 @@ film
 -
 id PK integer
 name varchar(100)
-releaseDate timestamp 
-description varchar(300)
+releaseDate date
+description varchar(200)
 duration integer
 rate integer
-rating_id int FK >- rating.id
+rating_id integer FK >- rating.id
 
 rating
 -
 id PK integer
 name varchar(10)
 
-genre 
+genre
 -
 id PK integer
 name varchar(50)
 
-film_genre 
+film_genre
 -
 film_id integer FK >- film.id
 genre_id integer FK >- genre.id
 
-user 
+favorite_films
+-
+film_id integer FK >- film.id
+user_id integer FK >- user.id
+
+user
 -
 id integer PK
 email varchar(100)
 login varchar(50)
 name varchar(100)
-birthdate date
+birthday date
 
-friendship 
+friendship
 -
 user_from integer FK >- user.id
 user_to integer FK >- user.id
-status_id integer FK >- friendship_status.id 
-
-
-friendship_status 
--
-id integer PK
-name varchar(100)
+is_confirmed boolean
