@@ -44,7 +44,6 @@ public class UserService {
         userStorage.addFriend(userId, friendId);
     }
 
-    // удаление из друзей
     public void removeFriend(int userId, int friendId) {
         userStorage.removeFriend(userId, friendId);
     }
