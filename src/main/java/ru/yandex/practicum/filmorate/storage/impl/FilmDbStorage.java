@@ -122,15 +122,19 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> findAll() {
-        String sql = "SELECT  id, name, release_date, description, duration, rate, rating_id FROM film ";
+        String sql = "SELECT f.id, f.name, f.release_date, f.description, f.duration, f.rate, f.rating_id, r.name AS rating_name " +
+                "FROM film AS f " +
+                "LEFT JOIN rating AS r ON r.id = f.rating_id ";
         return jdbcTemplate.query(sql, this::mapRowToFilm);
     }
 
     @Override
     public Film get(int id) {
         try {
-            String sqlQuery = "select id, name, release_date, description, duration, rate, rating_id " +
-                    "from film where id = ?";
+            String sqlQuery = "SELECT f.id, f.name, f.release_date, f.description, f.duration, f.rate, f.rating_id, r.name AS rating_name " +
+                    "FROM film AS f " +
+                    "LEFT JOIN rating AS r ON r.id = f.rating_id " +
+                    "WHERE f.id = ?";
             return jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id);
         } catch (EmptyResultDataAccessException e) {
             log.error("Фильм с id = {} не найден", id);
@@ -139,7 +143,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film mapRowToFilm(ResultSet rs, int i) throws SQLException {
-        Mpa mpa = getMpa(rs.getInt("rating_id"));
+        Mpa mpa = makeRating(rs);
         List<Genre> genres = getAllGenresByFilmId(rs.getInt("id"));
 
         Film film = Film.builder().id(rs.getInt("id"))
@@ -196,7 +200,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Mpa getMpa(int id) {
         try {
-            return jdbcTemplate.queryForObject("SELECT * FROM rating WHERE id = ?", (rs, rowNum) -> makeRating(rs), id);
+            return jdbcTemplate.queryForObject("SELECT id AS rating_id, name AS rating_name FROM rating WHERE id = ?", (rs, rowNum) -> makeRating(rs), id);
         } catch (EmptyResultDataAccessException e) {
             log.error("Рейтинг с id = {} не найден", id);
             throw new MpaNotFoundException("Рейтинг с id = " + id + " не найден");
@@ -205,7 +209,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Mpa> findAllMpa() {
-        String sql = "SELECT * FROM rating";
+        String sql = "SELECT id AS rating_id, name AS rating_name FROM rating";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeRating(rs));
     }
 
@@ -232,8 +236,8 @@ public class FilmDbStorage implements FilmStorage {
 
     private Mpa makeRating(ResultSet rs) throws SQLException {
         return new Mpa(
-                rs.getInt("id"),
-                rs.getString("name")
+                rs.getInt("rating_id"),
+                rs.getString("rating_name")
         );
     }
 }

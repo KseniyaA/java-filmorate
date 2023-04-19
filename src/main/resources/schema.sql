@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS users (
 	login VARCHAR(50) NOT NULL,
 	name VARCHAR(100) NOT NULL,
 	birthday date,
-	CONSTRAINT users_pk PRIMARY KEY (id)
+	CONSTRAINT users_pk PRIMARY KEY (id),
+	CONSTRAINT login_users_uc UNIQUE (login)
 );
 
 CREATE TABLE IF NOT EXISTS favorite_films (

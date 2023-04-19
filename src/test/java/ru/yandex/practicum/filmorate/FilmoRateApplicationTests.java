@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -27,6 +29,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class FilmoRateApplicationTests {
 	private final UserDbStorage userStorage;
 	private final FilmDbStorage filmStorage;
+
+	private final JdbcTemplate jdbcTemplate;
+
+	@AfterEach
+	public void afterTest() {
+		clearDb();
+	}
 
 	@Test
 	public void testCreateAndUpdateUser() {
@@ -365,5 +374,10 @@ class FilmoRateApplicationTests {
 				.build();
 		Film updatedFilm = filmStorage.update(film1);
 		assertEquals(0, updatedFilm.getGenres().size());
+	}
+
+	private void clearDb() {
+		String sqlQuery = "DELETE FROM users";
+		jdbcTemplate.update(sqlQuery);
 	}
 }
