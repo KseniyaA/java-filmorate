@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -18,7 +20,7 @@ public class FilmService {
     private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(@Qualifier("InMemoryFilmStorage") FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, @Qualifier("UserDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -46,13 +48,13 @@ public class FilmService {
     public void likeFilm(int filmId, int userId) {
         Film film = get(filmId);
         User user = userStorage.get(userId);
-        film.getLikes().add(user.getId());
+        filmStorage.likeFilm(film, user);
     }
 
     public void dislikeFilm(int filmId, int userId) {
         Film film = get(filmId);
         User user = userStorage.get(userId);
-        film.getLikes().remove(user.getId());
+        filmStorage.dislikeFilm(film, user);
     }
 
     // вывод 10 наиболее популярных фильмов по количеству лайков
@@ -60,5 +62,21 @@ public class FilmService {
         List<Film> films = filmStorage.findAll();
         return films.stream().sorted(Comparator.comparingInt(f -> -f.getLikes().size())).limit(count)
                 .collect(Collectors.toList());
+    }
+
+    public Genre getGenre(int id) {
+        return filmStorage.getGenre(id);
+    }
+
+    public List<Genre> findAllGenres() {
+        return filmStorage.findAllGenres();
+    }
+
+    public Mpa getMpa(int id) {
+        return filmStorage.getMpa(id);
+    }
+
+    public List<Mpa> findAllMpa() {
+        return filmStorage.findAllMpa();
     }
 }
